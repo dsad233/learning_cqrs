@@ -1,3 +1,4 @@
+import { TYPE } from 'libs/enums';
 import { Column, Entity, PrimaryColumn } from 'typeorm';
 
 @Entity({
@@ -16,13 +17,13 @@ export class UserDetail {
   })
   nickname: string;
 
-  @Column('tinyint', {
+  @Column('enum', {
     name: 'gender',
-    width: 1,
+    enum: TYPE.GenderEnum,
     nullable: true,
     comment: '성별',
   })
-  gender: number;
+  gender: TYPE.GenderEnum;
 
   @Column('date', {
     name: 'birth',

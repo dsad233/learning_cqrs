@@ -4,9 +4,8 @@ import { UsersController } from './controllers/users.controller';
 import { CqrsModule } from '@nestjs/cqrs';
 import { UsersRepository } from './users.repoository';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { User } from 'libs/entities/user.entity';
-import { UserDetail } from 'libs/entities/userDetail.entity';
 import { UsersHandler } from './handlers/users.handler';
+import { User, UserDetail } from 'libs/entities';
 
 @Module({
   imports: [TypeOrmModule.forFeature([User, UserDetail]), CqrsModule],
