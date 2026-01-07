@@ -33,12 +33,21 @@ export class UsersService {
   async hashedPassword(password: string): Promise<string> {
     return await bcrypt.hash(
       password,
-      this.configService.get<number>('BCRYPT_SALT'),
+      Number(this.configService.get<number>('BCRYPT_SALT')),
     );
   }
 
   // 유저 생성
   async create(command: UsersCommand): Promise<undefined> {
-    await this.usersRepository.create();
+    const newUsersCommand = new UsersCommand(
+      command.email,
+      await this.hashedPassword(command.password),
+      command.name,
+      command.nickname,
+      command.gender,
+      command.birth,
+    );
+
+    await this.usersRepository.create(newUsersCommand);
   }
 }

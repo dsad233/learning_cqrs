@@ -4,6 +4,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'libs/entities/user.entity';
 import { Repository } from 'typeorm';
 import { UserDetail } from 'libs/entities/userDetail.entity';
+import { UsersCommand } from './commands/users.command';
 
 @Injectable()
 export class UsersRepository implements IUsersRepository {
@@ -23,9 +24,22 @@ export class UsersRepository implements IUsersRepository {
   }
 
   // 유저 생성
-  async create(): Promise<undefined> {
-    console.log('수행 완료.');
-    // const user = this.users.create();
-    // await this.users.save(user);
+  async create(command: UsersCommand): Promise<undefined> {
+    const user = this.users.create({
+      email: command.email,
+      password: command.password,
+      name: command.name,
+    });
+
+    await this.users.save(user);
+
+    const userDetail = this.userDetails.create({
+      id: user.id,
+      nickname: command.nickname,
+      gender: command.gender,
+      birth: command.birth,
+    });
+
+    await this.userDetails.save(userDetail);
   }
 }
