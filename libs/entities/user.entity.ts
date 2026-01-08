@@ -1,4 +1,11 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  OneToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+import { UserDetail } from './userDetail.entity';
 
 @Entity({
   name: 'users',
@@ -38,4 +45,8 @@ export class User {
     onUpdate: 'CURRENT_TIMESTAMP',
   })
   updatedAt: Date;
+
+  @OneToOne(() => UserDetail)
+  @JoinColumn()
+  userDetail: UserDetail;
 }
