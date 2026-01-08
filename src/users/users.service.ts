@@ -2,7 +2,7 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { UsersRepository } from './users.repoository';
 import { ConfigService } from '@nestjs/config';
 import * as bcrypt from 'bcrypt';
-import { UsersCommand } from './commands/users.command';
+import { UserCreateCommand } from './commands/users.create.command';
 
 @Injectable()
 export class UsersService {
@@ -12,7 +12,7 @@ export class UsersService {
   ) {}
 
   // 유저 이메일 중복 여부 조회
-  async existEmail(email: string): Promise<undefined> {
+  async existEmail(email: string): Promise<void> {
     const alreadyEmail = await this.usersRepository.existEmail(email);
 
     if (alreadyEmail) {
@@ -21,7 +21,7 @@ export class UsersService {
   }
 
   // 유저 닉네임 존재 여부 조회
-  async existNickname(nickname: string): Promise<undefined> {
+  async existNickname(nickname: string): Promise<void> {
     const alreadyNickname = await this.usersRepository.existNickname(nickname);
 
     if (alreadyNickname) {
@@ -38,8 +38,8 @@ export class UsersService {
   }
 
   // 유저 생성
-  async create(command: UsersCommand): Promise<undefined> {
-    const newUsersCommand = new UsersCommand(
+  async create(command: UserCreateCommand): Promise<void> {
+    const newUsersCommand = new UserCreateCommand(
       command.email,
       await this.hashedPassword(command.password),
       command.name,

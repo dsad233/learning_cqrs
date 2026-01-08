@@ -4,7 +4,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'libs/entities/user.entity';
 import { Repository } from 'typeorm';
 import { UserDetail } from 'libs/entities/userDetail.entity';
-import { UsersCommand } from './commands/users.command';
+import { UserCreateCommand } from './commands/users.create.command';
 
 @Injectable()
 export class UsersRepository implements IUsersRepository {
@@ -24,7 +24,7 @@ export class UsersRepository implements IUsersRepository {
   }
 
   // 유저 생성
-  async create(command: UsersCommand): Promise<undefined> {
+  async create(command: UserCreateCommand): Promise<void> {
     const user = this.users.create({
       email: command.email,
       password: command.password,
