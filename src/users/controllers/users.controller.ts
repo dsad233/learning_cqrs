@@ -1,7 +1,7 @@
 import { Body, Controller, Post } from '@nestjs/common';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { CommandBus } from '@nestjs/cqrs';
-import { UsersCommand } from '../commands/users.command';
+import { UserCreateCommand } from '../commands/users.create.command';
 
 @Controller('users')
 export class UsersController {
@@ -13,7 +13,7 @@ export class UsersController {
     @Body() { email, password, name, nickname, gender, birth }: CreateUserDto,
   ) {
     return await this.commandBus.execute(
-      new UsersCommand(email, password, name, nickname, gender, birth),
+      new UserCreateCommand(email, password, name, nickname, gender, birth),
     );
   }
 }
