@@ -4,7 +4,7 @@ import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class MailerConfig implements MailerOptionsFactory {
-  constructor(private configService: ConfigService) {}
+  constructor(private readonly configService: ConfigService) {}
   createMailerOptions(): Promise<MailerOptions> | MailerOptions {
     return {
       transport: {
