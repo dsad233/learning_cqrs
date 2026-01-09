@@ -15,7 +15,7 @@ export class MailerService {
       .sendMail({
         to,
         from: this.configService.get<string>('MAIL_USER'),
-        subject: '[career] 당신의 커리어 이야기가 시작됐어요 🚀',
+        subject: '[career] 이메일 인증 📮',
         text: `
               `,
         html: `
@@ -26,7 +26,7 @@ export class MailerService {
         <br>
         <p>바로 시작해볼까요?</p>
         <hr>
-        <p><a href="http://localhost:3000/users/check?email=${to}">이메일 인증</a></p>
+        <p><a href="http://localhost:3000/users/email/check?email=${to}">이메일 인증</a></p>
         `,
       })
       .catch((error) => {

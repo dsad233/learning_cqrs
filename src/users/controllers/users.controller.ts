@@ -19,7 +19,7 @@ export class UsersController {
   }
 
   // 이메일 체크
-  @Get('check')
+  @Get('email/check')
   async checkEmail(@Query('email') email: string) {
     return await this.commandBus.execute(new UserVerifyCommand(email));
   }
