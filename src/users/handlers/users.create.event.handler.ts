@@ -10,7 +10,7 @@ export class UserCreateEventHandler implements IEventHandler<UserCreateEvent> {
     switch (event.name) {
       case UserCreateEvent.name:
         // 이메일 전송
-        await this.mailerService.sendEmail(event.receiveEmail);
+        await this.mailerService.signUpSendEmail(event.receiveEmail);
         break;
       default:
         break;

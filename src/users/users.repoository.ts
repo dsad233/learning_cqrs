@@ -5,6 +5,7 @@ import { User } from 'libs/entities/user.entity';
 import { Repository } from 'typeorm';
 import { UserDetail } from 'libs/entities/userDetail.entity';
 import { UserCreateCommand } from './commands/users.create.command';
+import { STATUS } from 'libs/enums';
 
 @Injectable()
 export class UsersRepository implements IUsersRepository {
@@ -41,5 +42,15 @@ export class UsersRepository implements IUsersRepository {
     });
 
     await this.userDetails.save(userDetail);
+  }
+
+  // 이메일 인증 여부 변경
+  async checkEmail(email: string) {
+    await this.users.update(
+      { email: email },
+      {
+        verified: STATUS.BooleanStatus.TRUE,
+      },
+    );
   }
 }

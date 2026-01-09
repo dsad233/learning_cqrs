@@ -50,4 +50,9 @@ export class UsersService {
 
     await this.usersRepository.create(newUsersCommand);
   }
+
+  // 이메일 인증
+  async certification(email: string) {
+    await this.usersRepository.checkEmail(email);
+  }
 }
