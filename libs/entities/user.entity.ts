@@ -6,6 +6,7 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { UserDetail } from './userDetail.entity';
+import { STATUS } from 'libs/enums';
 
 @Entity({
   name: 'users',
@@ -45,6 +46,14 @@ export class User {
     onUpdate: 'CURRENT_TIMESTAMP',
   })
   updatedAt: Date;
+
+  @Column('enum', {
+    name: 'verified',
+    enum: STATUS.BooleanStatus,
+    default: STATUS.BooleanStatus.FALSE,
+    comment: '이메일 인증 여부',
+  })
+  verified: STATUS.BooleanStatus;
 
   @OneToOne(() => UserDetail)
   @JoinColumn()
