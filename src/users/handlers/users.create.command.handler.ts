@@ -17,7 +17,7 @@ export class UserCreateCommandHandler implements ICommandHandler<UserCreateComma
     private readonly eventBus: EventBus,
   ) {}
 
-  async execute(command: UserCreateCommand) {
+  async execute(command: UserCreateCommand): Promise<any> {
     // 존재 여부 판별
     await this.queryBus.execute(
       new UserCreateQuery(command.email, command.nickname),

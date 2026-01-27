@@ -6,7 +6,7 @@ import { MailerService } from 'src/mailer/mailer.service';
 export class UserVerifyEventHandler implements IEventHandler<UserVerifyEvent> {
   constructor(private readonly mailerService: MailerService) {}
 
-  async handle(event: UserVerifyEvent) {
+  async handle(event: UserVerifyEvent): Promise<void> {
     switch (event.name) {
       case UserVerifyEvent.name:
         await this.mailerService.doneVerifySendEmail(event.email);

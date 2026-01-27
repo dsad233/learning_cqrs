@@ -10,7 +10,7 @@ export class UserVerifyCommandHandler implements ICommandHandler<UserVerifyComma
     private readonly eventBus: EventBus,
   ) {}
 
-  async execute(command: UserVerifyCommand) {
+  async execute(command: UserVerifyCommand): Promise<any> {
     // 이메일 인증 완료시 상태 값 변경
     await this.usersService.certification(command.email);
 
