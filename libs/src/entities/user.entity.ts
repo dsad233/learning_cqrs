@@ -2,11 +2,13 @@ import {
   Column,
   Entity,
   JoinColumn,
+  OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { UserDetail } from './userDetail.entity';
-import { STATUS } from 'libs/enums';
+import { Post } from './post.entity';
+import { STATUS } from '@libs/enums';
 
 @Entity({
   name: 'users',
@@ -55,7 +57,12 @@ export class User {
   })
   verified: STATUS.BooleanStatus;
 
-  @OneToOne(() => UserDetail)
-  @JoinColumn()
+  @OneToOne(() => UserDetail, (userDetail) => userDetail.user, {
+    cascade: ['insert'],
+  })
+  @JoinColumn({ name: 'user_detail_id', referencedColumnName: 'id' })
   userDetail: UserDetail;
+
+  @OneToMany(() => Post, (post) => post.user)
+  post: Post[];
 }
