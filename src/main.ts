@@ -7,6 +7,8 @@ async function bootstrap() {
   await app.listen(3000);
 
   app.useGlobalPipes(new ValidationPipe({ transform: true }));
+
+  app.enableShutdownHooks();
 }
 
 bootstrap();
