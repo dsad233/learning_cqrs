@@ -6,6 +6,7 @@ import { STATUS } from '@libs/.//enums';
 import { UserLoginQuery } from './queries/users.login.query';
 import { User, UserDetail } from '@libs/entities';
 import { UserUpdateCommand } from './commands/users.update.command';
+import { UserInfoQuery } from './queries/users.info.query';
 
 @Injectable()
 export class UsersRepository {
@@ -24,8 +25,30 @@ export class UsersRepository {
     return await this.userDetails.findOneBy({ nickname: nickname });
   }
 
-  // 유저 정보 조회
-  async findEmail(query: UserLoginQuery): Promise<User> {
+  // 유저 상세 조회
+  async findOne(query: UserInfoQuery): Promise<User> {
+    return await this.users.findOne({
+      where: {
+        email: query.email,
+      },
+      relations: {
+        userDetail: true,
+      },
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        userDetail: {
+          nickname: true,
+          gender: true,
+          birth: true,
+        },
+      },
+    });
+  }
+
+  // 이메일을 이용한 유저 조회
+  async findByEmail(query: UserLoginQuery): Promise<User> {
     return await this.users.findOne({
       where: {
         email: query.email,
@@ -82,10 +105,10 @@ export class UsersRepository {
   }
 
   // 업데이트
-  async updateUser(command: UserUpdateCommand) {
+  async updateUser(command: UserUpdateCommand): Promise<void> {
     const user = await this.users.findOne({
       where: {
-        id: command.userId,
+        email: command.email,
       },
       relations: { userDetail: true },
     });

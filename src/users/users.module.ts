@@ -16,12 +16,16 @@ import { UserLoginQueryHandler } from './handlers/users.login.query.hanlder';
 import { JwtModule } from 'src/jwt/jwt.module';
 import { UserLoginCommandHandler } from './handlers/users.login.command.handler';
 import { UserUpdateCommandHandler } from './handlers/users.update.command.handler';
+import { UserInfoQueryHandler } from './handlers/users.info.query.handler';
+import { ReissueCommandHandler } from './handlers/reissue.command.handler';
 
 const CommandHandler = [
   UserCreateCommandHandler,
   UserLoginCommandHandler,
   UserVerifyCommandHandler,
   UserUpdateCommandHandler,
+  UserInfoQueryHandler,
+  ReissueCommandHandler,
 ];
 const EventHandler = [UserCreateEventHandler, UserVerifyEventHandler];
 const QueryHandler = [UserCreateQueryHandler, UserLoginQueryHandler];

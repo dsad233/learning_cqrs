@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { UsersRepository } from './users.repoository';
 import { ConfigService } from '@nestjs/config';
 import * as bcrypt from 'bcrypt';
@@ -7,6 +11,10 @@ import { UserLoginQuery } from './queries/users.login.query';
 import { STATUS, TYPE } from '@libs/.//enums';
 import { UserUpdateCommand } from './commands/users.update.command';
 import { JwtService } from 'src/jwt/jwt.service';
+import { UserInfoQuery } from './queries/users.info.query';
+import { User } from '@libs/entities';
+import { LoginInterface } from './interfaces/login.interface';
+import { ReissueCommand } from './commands/reissue.command';
 
 @Injectable()
 export class UsersService {
@@ -34,9 +42,20 @@ export class UsersService {
     }
   }
 
+  // 유저 정보 조회
+  async findOne(query: UserInfoQuery): Promise<User> {
+    const user = await this.usersRepository.findOne(query);
+
+    if (!user) {
+      throw new BadRequestException('존재하지 않는 유저 입니다.');
+    }
+
+    return user;
+  }
+
   // 유저 로그인 정보 조회
-  async login(query: UserLoginQuery) {
-    const user = await this.usersRepository.findEmail(query);
+  async login(query: UserLoginQuery): Promise<LoginInterface> {
+    const user = await this.usersRepository.findByEmail(query);
 
     if (!user) {
       throw new BadRequestException('존재하지 않는 유저 입니다.');
@@ -44,25 +63,24 @@ export class UsersService {
 
     await this.comparePassword(query.password, user.password);
 
-    const accessToken = await this.jwtService.sign(
-      {
-        email: user.email,
-        name: user.name,
-        nickname: user.userDetail.nickname,
-      },
-      TYPE.TokenTypeEnum.ACCESS,
-    );
-
-    const refreshToken = await this.jwtService.sign(
-      {
-        email: user.email,
-        name: user.name,
-        nickname: user.userDetail.nickname,
-      },
-      TYPE.TokenTypeEnum.REFRESH,
-    );
-
-    return { accessToken: accessToken, refreshToken: refreshToken };
+    return {
+      accessToken: await this.jwtService.sign(
+        {
+          email: user.email,
+          name: user.name,
+          nickname: user.userDetail.nickname,
+        },
+        TYPE.TokenTypeEnum.ACCESS,
+      ),
+      refreshToken: await this.jwtService.sign(
+        {
+          email: user.email,
+          name: user.name,
+          nickname: user.userDetail.nickname,
+        },
+        TYPE.TokenTypeEnum.REFRESH,
+      ),
+    };
   }
 
   // 유저 패스워드 해쉬
@@ -100,7 +118,7 @@ export class UsersService {
   }
 
   // 이메일 인증
-  async certification(email: string) {
+  async certification(email: string): Promise<void> {
     const alreadyEmail = await this.usersRepository.alreadyCheckEmail(email);
 
     if (!alreadyEmail) {
@@ -115,8 +133,45 @@ export class UsersService {
     await this.usersRepository.checkEmail(email);
   }
 
-  // 업데이트
-  async updateUser(command: UserUpdateCommand) {
+  // 유저 업데이트
+  async updateUser(command: UserUpdateCommand): Promise<void> {
     await this.usersRepository.updateUser(command);
+  }
+
+  // 토큰 재발급
+  async tokenReissue(command: ReissueCommand): Promise<LoginInterface> {
+    const verifyToken = await this.jwtService.verifyAsync(
+      command.refreshToken,
+      TYPE.TokenTypeEnum.REFRESH,
+    );
+
+    if (!verifyToken) {
+      throw new UnauthorizedException('올바르지 않은 토큰 입니다.');
+    }
+
+    const user = await this.usersRepository.findByEmail(verifyToken.email);
+
+    if (!user) {
+      throw new BadRequestException('존재하지 않는 유저 입니다.');
+    }
+
+    return {
+      accessToken: await this.jwtService.sign(
+        {
+          email: user.email,
+          name: user.name,
+          nickname: user.userDetail.nickname,
+        },
+        TYPE.TokenTypeEnum.ACCESS,
+      ),
+      refreshToken: await this.jwtService.sign(
+        {
+          email: user.email,
+          name: user.name,
+          nickname: user.userDetail.nickname,
+        },
+        TYPE.TokenTypeEnum.REFRESH,
+      ),
+    };
   }
 }

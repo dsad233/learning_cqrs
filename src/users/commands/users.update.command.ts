@@ -2,7 +2,7 @@ import { ICommand } from '@nestjs/cqrs';
 
 export class UserUpdateCommand implements ICommand {
   constructor(
-    readonly userId: string,
+    readonly email: string,
     readonly password: string,
     readonly name: string | null,
     readonly nickname: string | null,
