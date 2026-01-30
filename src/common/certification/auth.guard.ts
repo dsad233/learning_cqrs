@@ -7,13 +7,27 @@ import {
 } from '@nestjs/common';
 import { Request } from 'express';
 import { JwtService } from 'src/jwt/jwt.service';
-import { authToken } from '../decorator/user.info.decorator';
+import { authKey } from '../decorator/user.info.decorator';
+import { Reflector } from '@nestjs/core';
+import { isPublicKey } from '../decorator/isPublic.decorator';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
-  constructor(private jwtService: JwtService) {}
+  constructor(
+    private readonly reflector: Reflector,
+    private readonly jwtService: JwtService,
+  ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
+    const isPublic = this.reflector.getAllAndOverride<boolean>(isPublicKey, [
+      context.getHandler(),
+      context.getClass(),
+    ]);
+
+    if (isPublic) {
+      return true;
+    }
+
     const request = context.switchToHttp().getRequest();
     const token = this.extractTokenFromHeader(request);
     if (!token) {
@@ -26,7 +40,7 @@ export class AuthGuard implements CanActivate {
         token,
         TYPE.TokenTypeEnum.ACCESS,
       );
-      request[authToken] = payload;
+      request[authKey] = payload;
     } catch {
       throw new UnauthorizedException('올바르지 않은 유저 정보 입니다.');
     }
